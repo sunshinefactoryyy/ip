@@ -1,10 +1,11 @@
 public class BobBot {
     public static void main(String[] args) {
-        String logo = " ____        _        \n"
-                + "|  _ \\ _   _| | _____ \n"
-                + "| | | | | | | |/ / _ \\\n"
-                + "| |_| | |_| |   <  __/\n"
-                + "|____/ \\__,_|_|\\_\\___|\n";
-        System.out.println("Hello from\n" + logo);
+        String BOT_NAME = "BobBot";
+        System.out.println("Hello! I'm " + BOT_NAME);
+        System.out.println("What can I do for you?");
+        System.out.println("__________________________________________________");
+
+        System.out.println("Bye. Hope to see you again soon!\n");
+        System.out.println("__________________________________________________");
     }
 }
