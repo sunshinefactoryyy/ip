@@ -1,0 +1,22 @@
+public class Task {
+    private String desc;
+    private boolean isDone;
+
+    public Task(String desc) {
+        this.desc = desc;
+        this.isDone = false;
+    }
+
+    public void markAsDone() {
+        isDone = true;
+    }
+
+    public void markAsNotDone() {
+        isDone = false;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + (isDone ? "X" : " ") + "] " + desc;
+    }
+}

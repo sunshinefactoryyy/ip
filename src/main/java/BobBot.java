@@ -5,16 +5,14 @@ public class BobBot {
     public static void main(String[] args) {
         String BOT_NAME = "BobBot";
         String BANNER =
-            " ██████   ██████   ██████   ██████   ██████   █████████\n" +
-            "██    ██ ██    ██ ██    ██ ██    ██ ██    ██     ██    \n" +
-            "██    ██ ██    ██ ██    ██ ██    ██ ██    ██     ██    \n" +
-            "███████  ██    ██ ███████  ███████  ██    ██     ██    \n" +
-            "██    ██ ██    ██ ██    ██ ██    ██ ██    ██     ██    \n" +
-            "██    ██ ██    ██ ██    ██ ██    ██ ██    ██     ██    \n" +
-            " ███████   ██████  ██████   ██████   ██████      ██    \n" +
-            "\n" +
-            "        [  (•_•)   B O B B O T   (•_•)  ]\n" +
-            "             Your friendly chatbot bobz\n";
+            "██████╗  ██████╗ ██████╗ ██████╗  ██████╗ ████████╗\n" +
+            "██╔══██╗██╔═══██╗██╔══██╗██╔══██╗██╔═══██╗╚══██╔══╝\n" +
+            "██████╔╝██║   ██║██████╔╝██████╔╝██║   ██║   ██║   \n" +
+            "██╔══██╗██║   ██║██╔══██╗██╔══██╗██║   ██║   ██║   \n" +
+            "██████╔╝╚██████╔╝██████╔╝██████╔╝╚██████╔╝   ██║   \n" +
+            "╚═════╝  ╚═════╝ ╚═════╝ ╚═════╝  ╚═════╝    ╚═╝   \n"
+            ;
+
         System.out.println(BANNER);
         printSeparator();
         System.out.println("Hello! I'm " + BOT_NAME);
@@ -22,31 +20,44 @@ public class BobBot {
         printSeparator();
 
         boolean start = true;
-        ArrayList<String> items = new ArrayList<>();
+        ArrayList<Task> tasks = new ArrayList<>();
         while (start) {
             Scanner userInput = new Scanner(System.in);
             String inputString = userInput.nextLine();
             if (inputString.equals("bye")) {
                 start = false;
                 System.out.println("Bye bobz. Hope to see you again soon bobz!");
-            } else {
-                // System.out.println(inputString); no need to echo anymore
-                if (inputString.equals("list")) {
-                    printSeparator();
-                    if (items.isEmpty()) {
+            } else if (inputString.equals("list")) {
+                 if (tasks.isEmpty()) {
                         System.out.println("No items in the list bobz.");
                     } else {
                         System.out.println("Here are the items in your list bobz:");
-                        for (int i = 0; i < items.size(); i++) {
-                            System.out.println((i + 1) + ". " + items.get(i));
+                        for (int i = 0; i < tasks.size(); i++) {
+                            System.out.println((i + 1) + ". " + tasks.get(i));
                         }
-                    }
-                } else {
-                    items.add(inputString);
-                    System.out.println("Added: " + inputString);
-                }
+                    }   
+                
                 printSeparator();
-                System.err.println("\n");
+            } else if (inputString.startsWith("mark ")) {
+                int taskIndex = Integer.parseInt(inputString.split(" ")[1]) - 1;
+                Task task = tasks.get(taskIndex);
+                task.markAsDone();
+                printSeparator();
+                System.out.println("Nice bobz! I've marked this task as done bobz:");
+                System.out.println("  " + task);
+                printSeparator();
+            } else if (inputString.startsWith("unmark ")) {
+                int taskIndex = Integer.parseInt(inputString.split(" ")[1]) - 1;
+                Task task = tasks.get(taskIndex);
+                task.markAsNotDone();
+                printSeparator();
+                System.out.println("OK bobz, I've marked this task as not done yet bobz:");
+                System.out.println("  " + task);
+                printSeparator();
+            } else {
+                tasks.add(new Task(inputString));
+                System.out.println("Added: " + inputString);
+                printSeparator();
             }
         }
     }
