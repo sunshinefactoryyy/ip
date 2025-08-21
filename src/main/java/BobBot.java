@@ -40,9 +40,7 @@ public class BobBot {
                             for (int i = 0; i < tasks.size(); i++) {
                                 System.out.println((i + 1) + ". " + tasks.get(i));
                             }
-                        }   
-                    
-                    printSeparator();
+                        }
 
                 } else if (inputString.startsWith("mark ")) {
                     int taskIndex = Integer.parseInt(inputString.split(" ")[1]) - 1;
@@ -99,10 +97,21 @@ public class BobBot {
                         System.out.println("BOBZ!!! Invalid format for event bobz. Try: event <desc> /from <start> /to <end>");
                     }
 
+                } else if (inputString.startsWith("delete ")) {
+                    int index = Integer.parseInt(inputString.split(" ")[1]) - 1;
+                    if (index < 0 || index >= tasks.size()) {
+                        throw new BobException("BOBZ!!! That task number does not exist.");
+                    }
+                    Task removedTask = tasks.remove(index);
+                    System.out.println("Noted bobz. I've removed this task bobz:");
+                    System.out.println("  " + removedTask);
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list bobz.");
+
                 } else {
-                    System.out.println("BOBZ!!! what are you saying bobz. Only use 'todo', 'deadline' and 'event' bobz.");
+                    throw new BobException("BOBZ!!! what are you saying bobz. Only use 'todo', 'deadline', 'event' and 'delete' bobz.");
                     
                 }
+                printSeparator();
             } catch (BobException e) {
                 System.out.println(e.getMessage());
             } catch (Exception e) {
