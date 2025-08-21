@@ -21,12 +21,16 @@ public class BobBot {
 
         boolean start = true;
         ArrayList<Task> tasks = new ArrayList<>();
+        Scanner userInput = new Scanner(System.in);
+
         while (start) {
-            Scanner userInput = new Scanner(System.in);
+            
             String inputString = userInput.nextLine();
+            
             if (inputString.equals("bye")) {
                 start = false;
                 System.out.println("Bye bobz. Hope to see you again soon bobz!");
+
             } else if (inputString.equals("list")) {
                  if (tasks.isEmpty()) {
                         System.out.println("No items in the list bobz.");
@@ -38,28 +42,67 @@ public class BobBot {
                     }   
                 
                 printSeparator();
+
             } else if (inputString.startsWith("mark ")) {
                 int taskIndex = Integer.parseInt(inputString.split(" ")[1]) - 1;
                 Task task = tasks.get(taskIndex);
                 task.markAsDone();
                 printSeparator();
+
                 System.out.println("Nice bobz! I've marked this task as done bobz:");
                 System.out.println("  " + task);
                 printSeparator();
+
             } else if (inputString.startsWith("unmark ")) {
                 int taskIndex = Integer.parseInt(inputString.split(" ")[1]) - 1;
                 Task task = tasks.get(taskIndex);
                 task.markAsNotDone();
                 printSeparator();
+
                 System.out.println("OK bobz, I've marked this task as not done yet bobz:");
                 System.out.println("  " + task);
                 printSeparator();
+
+            } else if (inputString.startsWith("todo ")) {
+                String description = inputString.substring(5).trim();
+                Task task = new Todo(description);
+                tasks.add(task);
+                System.out.println("Got it bobz. I've added this task:");
+                System.out.println("  " + task);
+                System.out.println("Now you have " + tasks.size() + " tasks in the list bobz.");
+
+            } else if (inputString.startsWith("deadline ")) {
+                String[] parts = inputString.substring(9).split(" /by ");
+                if (parts.length == 2) {
+                    Task task = new Deadline(parts[0].trim(), parts[1].trim());
+                    tasks.add(task);
+                    System.out.println("Got it bobz. I've added this task:");
+                    System.out.println("  " + task);
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list bobz.");
+                } else {
+                    System.out.println("Invalid format for deadline. Try: deadline <desc> /by <time>");
+                }
+
+            } else if (inputString.startsWith("event ")) {
+                String[] parts = inputString.substring(6).split(" /from | /to ");
+                if (parts.length == 3) {
+                    Task task = new Event(parts[0].trim(), parts[1].trim(), parts[2].trim());
+                    tasks.add(task);
+                    System.out.println("Got it bobz. I've added this task:");
+                    System.out.println("  " + task);
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list bobz.");
+                } else {
+                    System.out.println("Invalid format for event. Try: event <desc> /from <start> /to <end>");
+                }
+
             } else {
                 tasks.add(new Task(inputString));
                 System.out.println("Added: " + inputString);
-                printSeparator();
+                
             }
         }
+
+        userInput.close(); // resourse leak prevention
     }
 
     private static void printSeparator() {
