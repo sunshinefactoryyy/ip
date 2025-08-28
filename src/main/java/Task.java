@@ -1,5 +1,5 @@
 public class Task {
-    private String desc;
+    private final String desc;
     private boolean isDone;
 
     public Task(String desc) {

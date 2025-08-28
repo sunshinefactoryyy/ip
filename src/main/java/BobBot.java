@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class BobBot {
+    private static final Storage storage = new Storage("../../../data/bobbotTask.txt");
     public static void main(String[] args) {
         String BOT_NAME = "BobBot";
         String BANNER =
@@ -20,7 +21,7 @@ public class BobBot {
         printSeparator();
 
         boolean start = true;
-        ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<Task> tasks = storage.loadTasks();
         Scanner userInput = new Scanner(System.in);
 
         while (start) {
@@ -50,6 +51,7 @@ public class BobBot {
 
                     System.out.println("Nice bobz! I've marked this task as done bobz:");
                     System.out.println("  " + task);
+                    saveToFile(tasks);
                     printSeparator();
 
                 } else if (inputString.startsWith("unmark ")) {
@@ -60,7 +62,9 @@ public class BobBot {
 
                     System.out.println("OK bobz, I've marked this task as not done yet bobz:");
                     System.out.println("  " + task);
+                    saveToFile(tasks);
                     printSeparator();
+
 
                 } else if (inputString.startsWith("todo ")) {
                     String desc = inputString.substring(5).trim();
@@ -72,6 +76,7 @@ public class BobBot {
                     System.out.println("Got it bobz. I've added this task:");
                     System.out.println("  " + task);
                     System.out.println("Now you have " + tasks.size() + " tasks in the list bobz.");
+                    saveToFile(tasks);
 
                 } else if (inputString.startsWith("deadline ")) {
                     String[] parts = inputString.substring(9).split(" /by ");
@@ -81,6 +86,7 @@ public class BobBot {
                         System.out.println("Got it bobz. I've added this task:");
                         System.out.println("  " + task);
                         System.out.println("Now you have " + tasks.size() + " tasks in the list bobz.");
+                        saveToFile(tasks);
                     } else {
                         System.out.println("BOBZ!!! Invalid format for deadline bobz. Try: deadline <desc> /by <time>");
                     }
@@ -93,6 +99,7 @@ public class BobBot {
                         System.out.println("Got it bobz. I've added this task:");
                         System.out.println("  " + task);
                         System.out.println("Now you have " + tasks.size() + " tasks in the list bobz.");
+                        saveToFile(tasks);
                     } else {
                         System.out.println("BOBZ!!! Invalid format for event bobz. Try: event <desc> /from <start> /to <end>");
                     }
@@ -106,6 +113,7 @@ public class BobBot {
                     System.out.println("Noted bobz. I've removed this task bobz:");
                     System.out.println("  " + removedTask);
                     System.out.println("Now you have " + tasks.size() + " tasks in the list bobz.");
+                    saveToFile(tasks);
 
                 } else {
                     throw new BobException("BOBZ!!! what are you saying bobz. Only use 'todo', 'deadline', 'event' and 'delete' bobz.");
@@ -123,5 +131,13 @@ public class BobBot {
 
     private static void printSeparator() {
         System.out.println("--------------------------------------------------");
+    }
+
+    private static void saveToFile(ArrayList<Task> tasks) {
+        try {
+            storage.saveTasks(tasks);
+        } catch (Exception e) {
+            System.out.println("Something went wrong while saving: " + e.getMessage());
+        }
     }
 }
