@@ -1,143 +1,130 @@
-import java.util.ArrayList;
-import java.util.Scanner;
-
 public class BobBot {
-    private static final Storage storage = new Storage("../../../data/bobbotTask.txt");
-    public static void main(String[] args) {
-        String BOT_NAME = "BobBot";
-        String BANNER =
-            "██████╗  ██████╗ ██████╗ ██████╗  ██████╗ ████████╗\n" +
-            "██╔══██╗██╔═══██╗██╔══██╗██╔══██╗██╔═══██╗╚══██╔══╝\n" +
-            "██████╔╝██║   ██║██████╔╝██████╔╝██║   ██║   ██║   \n" +
-            "██╔══██╗██║   ██║██╔══██╗██╔══██╗██║   ██║   ██║   \n" +
-            "██████╔╝╚██████╔╝██████╔╝██████╔╝╚██████╔╝   ██║   \n" +
-            "╚═════╝  ╚═════╝ ╚═════╝ ╚═════╝  ╚═════╝    ╚═╝   \n"
-            ;
+    private Storage storage;
+    private TaskList tasks;
+    private Ui ui;
 
-        System.out.println(BANNER);
-        printSeparator();
-        System.out.println("Hello! I'm " + BOT_NAME);
-        System.out.println("What can I do for you bobz?");
-        printSeparator();
+    public BobBot(String filePath) {
+        ui = new Ui();
+        storage = new Storage(filePath);
+        tasks = new TaskList(storage.loadTasks());
+    }
 
-        boolean start = true;
-        ArrayList<Task> tasks = storage.loadTasks();
-        Scanner userInput = new Scanner(System.in);
+    public void run() {
+        ui.showWelcome();
 
-        while (start) {
-            
-            String inputString = userInput.nextLine();
-            
+        boolean isExit = false;
+        while (!isExit) {
             try {
-                if (inputString.equals("bye")) {
-                    start = false;
-                    System.out.println("Bye bobz. Hope to see you again soon bobz!");
-
-                } else if (inputString.equals("list")) {
-                    if (tasks.isEmpty()) {
-                            System.out.println("No items in the list bobz.");
-                        } else {
-                            System.out.println("Here are the items in your list bobz:");
-                            for (int i = 0; i < tasks.size(); i++) {
-                                System.out.println((i + 1) + ". " + tasks.get(i));
-                            }
-                        }
-
-                } else if (inputString.startsWith("mark ")) {
-                    int taskIndex = Integer.parseInt(inputString.split(" ")[1]) - 1;
-                    Task task = tasks.get(taskIndex);
-                    task.markAsDone();
-                    printSeparator();
-
-                    System.out.println("Nice bobz! I've marked this task as done bobz:");
-                    System.out.println("  " + task);
-                    saveToFile(tasks);
-                    printSeparator();
-
-                } else if (inputString.startsWith("unmark ")) {
-                    int taskIndex = Integer.parseInt(inputString.split(" ")[1]) - 1;
-                    Task task = tasks.get(taskIndex);
-                    task.markAsNotDone();
-                    printSeparator();
-
-                    System.out.println("OK bobz, I've marked this task as not done yet bobz:");
-                    System.out.println("  " + task);
-                    saveToFile(tasks);
-                    printSeparator();
-
-
-                } else if (inputString.startsWith("todo ")) {
-                    String desc = inputString.substring(5).trim();
-                    if (desc.isEmpty()) {
-                        throw new BobException("BOBZ!!! The description of a todo cannot be empty bobz.");
-                    }
-                    Task task = new Todo(desc);
-                    tasks.add(task);
-                    System.out.println("Got it bobz. I've added this task:");
-                    System.out.println("  " + task);
-                    System.out.println("Now you have " + tasks.size() + " tasks in the list bobz.");
-                    saveToFile(tasks);
-
-                } else if (inputString.startsWith("deadline ")) {
-                    String[] parts = inputString.substring(9).split(" /by ");
-                    if (parts.length == 2) {
-                        Task task = new Deadline(parts[0].trim(), parts[1].trim());
-                        tasks.add(task);
-                        System.out.println("Got it bobz. I've added this task:");
-                        System.out.println("  " + task);
-                        System.out.println("Now you have " + tasks.size() + " tasks in the list bobz.");
-                        saveToFile(tasks);
-                    } else {
-                        System.out.println("BOBZ!!! Invalid format for deadline bobz. Try: deadline <desc> /by <time>");
-                    }
-
-                } else if (inputString.startsWith("event ")) {
-                    String[] parts = inputString.substring(6).split(" /from | /to ");
-                    if (parts.length == 3) {
-                        Task task = new Event(parts[0].trim(), parts[1].trim(), parts[2].trim());
-                        tasks.add(task);
-                        System.out.println("Got it bobz. I've added this task:");
-                        System.out.println("  " + task);
-                        System.out.println("Now you have " + tasks.size() + " tasks in the list bobz.");
-                        saveToFile(tasks);
-                    } else {
-                        System.out.println("BOBZ!!! Invalid format for event bobz. Try: event <desc> /from <start> /to <end>");
-                    }
-
-                } else if (inputString.startsWith("delete ")) {
-                    int index = Integer.parseInt(inputString.split(" ")[1]) - 1;
-                    if (index < 0 || index >= tasks.size()) {
-                        throw new BobException("BOBZ!!! That task number does not exist.");
-                    }
-                    Task removedTask = tasks.remove(index);
-                    System.out.println("Noted bobz. I've removed this task bobz:");
-                    System.out.println("  " + removedTask);
-                    System.out.println("Now you have " + tasks.size() + " tasks in the list bobz.");
-                    saveToFile(tasks);
-
-                } else {
-                    throw new BobException("BOBZ!!! what are you saying bobz. Only use 'todo', 'deadline', 'event' and 'delete' bobz.");
-                    
+                String fullCommand = ui.readCommand();
+                Parser.Command command = Parser.parseCommand(fullCommand);
+                
+                switch (command.getType()) {
+                    case BYE:
+                        isExit = true;
+                        ui.showBye();
+                        break;
+                    case LIST:
+                        ui.showTaskList(tasks);
+                        break;
+                    case MARK:
+                        handleMark(command.getArguments());
+                        break;
+                    case UNMARK:
+                        handleUnmark(command.getArguments());
+                        break;
+                    case TODO:
+                        handleTodo(command.getArguments());
+                        break;
+                    case DEADLINE:
+                        handleDeadline(command.getArguments());
+                        break;
+                    case EVENT:
+                        handleEvent(command.getArguments());
+                        break;
+                    case DELETE:
+                        handleDelete(command.getArguments());
+                        break;
+                    case INVALID:
+                        throw new BobException("BOBZ!!! what are you saying bobz. Only use 'todo', 'deadline', 'event' and 'delete' bobz.");
                 }
-                printSeparator();
+                
+                if (!isExit) {
+                    ui.showLine();
+                }
             } catch (BobException e) {
-                System.out.println(e.getMessage());
+                ui.showError(e.getMessage());
             } catch (Exception e) {
-                System.out.println("BOBZ!!!Something went wrong, please check your command format bobz.");
+                ui.showError("BOBZ!!!Something went wrong, please check your command format bobz.");
             }
         }
-        userInput.close(); // resourse leak prevention
+        ui.close();
     }
 
-    private static void printSeparator() {
-        System.out.println("--------------------------------------------------");
+    private void handleMark(String[] args) throws Exception {
+        int taskIndex = Integer.parseInt(args[0]) - 1;
+        Task task = tasks.getTask(taskIndex);
+        task.markAsDone();
+        ui.showTaskMarked(task);
+        saveToFile();
     }
 
-    private static void saveToFile(ArrayList<Task> tasks) {
-        try {
-            storage.saveTasks(tasks);
-        } catch (Exception e) {
-            System.out.println("Something went wrong while saving: " + e.getMessage());
+    private void handleUnmark(String[] args) throws Exception {
+        int taskIndex = Integer.parseInt(args[0]) - 1;
+        Task task = tasks.getTask(taskIndex);
+        task.markAsNotDone();
+        ui.showTaskUnmarked(task);
+        saveToFile();
+    }
+
+    private void handleTodo(String[] args) throws Exception {
+        String desc = args[0];
+        if (desc.isEmpty()) {
+            throw new BobException("BOBZ!!! The description of a todo cannot be empty bobz.");
         }
+        Task task = new Todo(desc);
+        tasks.addTask(task);
+        ui.showTaskAdded(task, tasks.size());
+        saveToFile();
+    }
+
+    private void handleDeadline(String[] args) throws Exception {
+        if (args.length != 2) {
+            ui.showError("BOBZ!!! Invalid format for deadline bobz. Try: deadline <desc> /by <time>");
+            return;
+        }
+        Task task = new Deadline(args[0].trim(), args[1].trim());
+        tasks.addTask(task);
+        ui.showTaskAdded(task, tasks.size());
+        saveToFile();
+    }
+
+    private void handleEvent(String[] args) throws Exception {
+        if (args.length != 3) {
+            ui.showError("BOBZ!!! Invalid format for event bobz. Try: event <desc> /from <start> /to <end>");
+            return;
+        }
+        Task task = new Event(args[0].trim(), args[1].trim(), args[2].trim());
+        tasks.addTask(task);
+        ui.showTaskAdded(task, tasks.size());
+        saveToFile();
+    }
+
+    private void handleDelete(String[] args) throws Exception {
+        int index = Integer.parseInt(args[0]) - 1;
+        Task removedTask = tasks.deleteTask(index);
+        ui.showTaskDeleted(removedTask, tasks.size());
+        saveToFile();
+    }
+
+    private void saveToFile() {
+        try {
+            storage.saveTasks(tasks.getTasks());
+        } catch (Exception e) {
+            ui.showError("Something went wrong while saving: " + e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        new BobBot("../../../data/bobbotTask.txt").run();
     }
 }

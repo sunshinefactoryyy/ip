@@ -42,8 +42,9 @@ public class Storage {
             s.close();
         } catch (FileNotFoundException e) {
             // File doesn't exist yet, start with empty list
+            System.out.println("Error loading tasks bobz: File not found bobz");
         } catch (Exception e) {
-            System.out.println("Error loading tasks: " + e.getMessage());
+            System.out.println("Error loading tasks bobz: " + e.getMessage());
         }
         return tasks;
     }
