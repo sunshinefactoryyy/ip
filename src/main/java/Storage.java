@@ -13,7 +13,7 @@ public class Storage {
     }
 
     public void saveTasks(ArrayList<Task> tasks) throws IOException {
-        File dataDir = new File("./data");
+        File dataDir = new File("../../../data");
         if (!dataDir.exists()) {
             dataDir.mkdirs();
         }
