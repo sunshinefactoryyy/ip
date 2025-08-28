@@ -1,4 +1,4 @@
-package BobBot.parser;
+package bobbot.parser;
 
 public class Parser {
 

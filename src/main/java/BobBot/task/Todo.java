@@ -1,4 +1,4 @@
-package BobBot.task;
+package bobbot.task;
 
 public class Todo extends Task {
     public Todo(String desc) {

@@ -1,9 +1,4 @@
-package BobBot.storage;
-
-import BobBot.task.Task;
-import BobBot.task.Todo;
-import BobBot.task.Event;
-import BobBot.task.Deadline;
+package bobbot.storage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,6 +6,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import bobbot.task.Deadline;
+import bobbot.task.Event;
+import bobbot.task.Task;
+import bobbot.task.Todo;
 
 public class Storage {
     private final String filePath;
