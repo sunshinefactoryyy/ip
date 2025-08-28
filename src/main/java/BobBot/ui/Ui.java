@@ -1,4 +1,8 @@
+package BobBot.ui;
 import java.util.Scanner;
+
+import BobBot.task.Task;
+import BobBot.tasklist.TaskList;
 
 public class Ui {
     private Scanner scanner;

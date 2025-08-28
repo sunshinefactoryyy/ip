@@ -1,4 +1,9 @@
+package BobBot.tasklist;
+
 import java.util.ArrayList;
+
+import BobBot.BobException;
+import BobBot.task.Task;
 
 public class TaskList {
     private ArrayList<Task> tasks;

@@ -1,3 +1,5 @@
+package BobBot.parser;
+
 public class Parser {
 
     public enum CommandType {

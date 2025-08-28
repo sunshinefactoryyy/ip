@@ -1,3 +1,14 @@
+package BobBot;
+
+import BobBot.parser.Parser;
+import BobBot.tasklist.TaskList;
+import BobBot.storage.Storage;
+import BobBot.ui.Ui;
+import BobBot.task.Deadline;
+import BobBot.task.Event;
+import BobBot.task.Task;
+import BobBot.task.Todo;
+
 public class BobBot {
     private Storage storage;
     private TaskList tasks;

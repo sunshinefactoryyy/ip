@@ -1,3 +1,10 @@
+package BobBot.storage;
+
+import BobBot.task.Task;
+import BobBot.task.Todo;
+import BobBot.task.Event;
+import BobBot.task.Deadline;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
