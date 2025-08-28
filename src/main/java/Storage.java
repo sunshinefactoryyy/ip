@@ -63,11 +63,9 @@ public class Storage {
             }
             
             char taskType = taskString.charAt(1);
-            
-            // Extract done status
+        
             boolean isDone = taskString.charAt(3) == 'X';
             
-            // Extract description and additional info
             String content = taskString.substring(6); // Skip "[T][ ] " or "[T][X] "
             
             Task task = null;
