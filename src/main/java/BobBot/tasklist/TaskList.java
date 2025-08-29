@@ -6,7 +6,7 @@ import bobbot.exception.BobException;
 import bobbot.task.Task;
 
 public class TaskList {
-    private ArrayList<Task> tasks;
+    private final ArrayList<Task> tasks;
 
     public TaskList() {
         this.tasks = new ArrayList<>();
@@ -21,16 +21,12 @@ public class TaskList {
     }
 
     public Task deleteTask(int index) throws BobException {
-        if (index < 0 || index >= tasks.size()) {
-            throw new BobException("BOBZ!!! That task number does not exist.");
-        }
+        validateIndex(index);
         return tasks.remove(index);
     }
 
     public Task getTask(int index) throws BobException {
-        if (index < 0 || index >= tasks.size()) {
-            throw new BobException("BOBZ!!! That task number does not exist.");
-        }
+        validateIndex(index);
         return tasks.get(index);
     }
 
@@ -48,5 +44,11 @@ public class TaskList {
 
     public ArrayList<Task> getTasks() {
         return tasks;
+    }
+
+    private void validateIndex(int index) throws BobException {
+        if (index < 0 || index >= tasks.size()) {
+            throw new BobException("BOBZ!!! That task number does not exist.");
+        }
     }
 }

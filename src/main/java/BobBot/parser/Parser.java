@@ -32,26 +32,50 @@ public class Parser {
         } else if (trimmed.equals("list")) {
             return new Command(CommandType.LIST, new String[0]);
         } else if (trimmed.startsWith("mark ")) {
-            String indexStr = trimmed.substring(5).trim();
-            return new Command(CommandType.MARK, new String[]{indexStr});
+            return parseMarkCommand(trimmed);
         } else if (trimmed.startsWith("unmark ")) {
-            String indexStr = trimmed.substring(7).trim();
-            return new Command(CommandType.UNMARK, new String[]{indexStr});
+            return parseUnmarkCommand(trimmed);
         } else if (trimmed.startsWith("todo ")) {
-            String desc = trimmed.substring(5).trim();
-            return new Command(CommandType.TODO, new String[]{desc});
+            return parseTodoCommand(trimmed);
         } else if (trimmed.startsWith("deadline ")) {
-            String[] parts = trimmed.substring(9).split(" /by ", 2);
-            return new Command(CommandType.DEADLINE, parts);
+            return parseDeadlineCommand(trimmed);
         } else if (trimmed.startsWith("event ")) {
-            String remaining = trimmed.substring(6);
-            String[] parts = remaining.split(" /from | /to ");
-            return new Command(CommandType.EVENT, parts);
+            return parseEventCommand(trimmed);
         } else if (trimmed.startsWith("delete ")) {
-            String indexStr = trimmed.substring(7).trim();
-            return new Command(CommandType.DELETE, new String[]{indexStr});
+            return parseDeleteCommand(trimmed);
         } else {
             return new Command(CommandType.INVALID, new String[0]);
         }
+    }
+
+    private static Command parseMarkCommand(String trimmed) {
+        String indexStr = trimmed.substring(5).trim();
+        return new Command(CommandType.MARK, new String[]{indexStr});
+    }
+
+    private static Command parseUnmarkCommand(String trimmed) {
+        String indexStr = trimmed.substring(7).trim();
+        return new Command(CommandType.UNMARK, new String[]{indexStr});
+    }
+
+    private static Command parseTodoCommand(String trimmed) {
+        String desc = trimmed.substring(5).trim();
+        return new Command(CommandType.TODO, new String[]{desc});
+    }
+
+    private static Command parseDeadlineCommand(String trimmed) {
+        String[] parts = trimmed.substring(9).split(" /by ", 2);
+        return new Command(CommandType.DEADLINE, parts);
+    }
+
+    private static Command parseEventCommand(String trimmed) {
+        String remaining = trimmed.substring(6);
+        String[] parts = remaining.split(" /from | /to ");
+        return new Command(CommandType.EVENT, parts);
+    }
+
+    private static Command parseDeleteCommand(String trimmed) {
+        String indexStr = trimmed.substring(7).trim();
+        return new Command(CommandType.DELETE, new String[]{indexStr});
     }
 }

@@ -11,9 +11,9 @@ import bobbot.tasklist.TaskList;
 import bobbot.ui.Ui;
 
 public class BobBot {
-    private Storage storage;
-    private TaskList tasks;
-    private Ui ui;
+    private final Storage storage;
+    private final TaskList tasks;
+    private final Ui ui;
 
     public BobBot(String filePath) {
         ui = new Ui();
@@ -132,7 +132,7 @@ public class BobBot {
         try {
             storage.saveTasks(tasks.getTasks());
         } catch (Exception e) {
-            ui.showError("Something went wrong while saving: " + e.getMessage());
+            ui.showError("Something went wrong while savin bobz: " + e.getMessage());
         }
     }
 
