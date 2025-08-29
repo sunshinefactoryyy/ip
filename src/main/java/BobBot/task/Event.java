@@ -4,12 +4,24 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Represents an event task with start and end times.
+ * Supports both formatted datetime (yyyy-MM-dd HHmm) and free-form text.
+ */
 public class Event extends Task {
     protected LocalDateTime from;
     protected LocalDateTime to;
     protected String originalFromInput;
     protected String originalToInput;
 
+    /**
+     * Creates a new Event task with the specified description and time period.
+     * Attempts to parse datetime in yyyy-MM-dd HHmm format, falls back to original string if parsing fails.
+     *
+     * @param desc Description of the event task.
+     * @param from Start time in yyyy-MM-dd HHmm format or free-form text.
+     * @param to End time in yyyy-MM-dd HHmm format or free-form text.
+     */
     public Event(String desc, String from, String to) {
         super(desc);
         this.originalFromInput = from;
@@ -18,6 +30,13 @@ public class Event extends Task {
         this.to = parseDateTime(to);
     }
 
+    /**
+     * Parses a datetime string into a LocalDateTime object.
+     * Supports both input format (yyyy-MM-dd HHmm) and display format (MMM dd yyyy HHmm) for file loading.
+     *
+     * @param dateTimeString DateTime string to parse.
+     * @return LocalDateTime object if parsing succeeds, null otherwise.
+     */
     private LocalDateTime parseDateTime(String dateTimeString) {
         if (dateTimeString == null || dateTimeString.trim().isEmpty()) {
             return null;
@@ -37,6 +56,13 @@ public class Event extends Task {
         }
     }
 
+    /**
+     * Returns a string representation of this event task.
+     * Formats datetime as "MMM dd yyyy HHmm" if parsable, otherwise uses original input.
+     * The format is [E][X] description (from: start to: end) if done, or [E][ ] description (from: start to: end) if not done.
+     *
+     * @return String representation of this event task.
+     */
     @Override
     public String toString() {
         String fromDisplay;

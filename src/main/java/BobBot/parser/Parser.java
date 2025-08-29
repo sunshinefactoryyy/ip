@@ -1,29 +1,93 @@
 package bobbot.parser;
 
+/**
+ * Parses user input commands and converts them into structured Command objects.
+ * Supports various command types including task creation, modification, and deletion.
+ */
 public class Parser {
 
+    /**
+     * Enumeration of all supported command types in BobBot.
+     * Each type corresponds to a specific user action or operation.
+     */
     public enum CommandType {
-        BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, INVALID
+        /** Exit the application */
+        BYE, 
+        /** List all tasks */
+        LIST, 
+        /** Mark a task as completed */
+        MARK, 
+        /** Mark a task as not completed */
+        UNMARK, 
+        /** Create a new todo task */
+        TODO, 
+        /** Create a new deadline task */
+        DEADLINE, 
+        /** Create a new event task */
+        EVENT, 
+        /** Delete an existing task */
+        DELETE, 
+        /** Invalid or unrecognized command */
+        INVALID
     }
 
+    /**
+     * Represents a parsed command with its type and associated arguments.
+     * Encapsulates the command type and any parameters needed for execution.
+     */
     public static class Command {
         private final CommandType type;
         private final String[] arguments;
 
+        /**
+         * Constructs a new Command with the specified type and arguments.
+         *
+         * @param type the type of command
+         * @param arguments the arguments associated with the command
+         */
         public Command(CommandType type, String[] arguments) {
             this.type = type;
             this.arguments = arguments;
         }
 
+        /**
+         * Returns the type of this command.
+         *
+         * @return the CommandType of this command
+         */
         public CommandType getType() {
             return type;
         }
 
+        /**
+         * Returns the arguments associated with this command.
+         *
+         * @return an array of string arguments for this command
+         */
         public String[] getArguments() {
             return arguments;
         }
     }
 
+    /**
+     * Parses a user input string and returns the corresponding Command object.
+     * Analyzes the input to determine command type and extracts relevant arguments.
+     * 
+     * <p>Supported command formats:
+     * <ul>
+     *   <li>bye - exit the application</li>
+     *   <li>list - show all tasks</li>
+     *   <li>mark &lt;index&gt; - mark task as done</li>
+     *   <li>unmark &lt;index&gt; - mark task as not done</li>
+     *   <li>todo &lt;description&gt; - create todo task</li>
+     *   <li>deadline &lt;description&gt; /by &lt;time&gt; - create deadline task</li>
+     *   <li>event &lt;description&gt; /from &lt;start&gt; /to &lt;end&gt; - create event task</li>
+     *   <li>delete &lt;index&gt; - delete task</li>
+     * </ul>
+     *
+     * @param input the user input string to parse
+     * @return a Command object representing the parsed command and its arguments
+     */
     public static Command parseCommand(String input) {
         String trimmed = input.trim();
 

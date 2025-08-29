@@ -12,13 +12,30 @@ import bobbot.task.Event;
 import bobbot.task.Task;
 import bobbot.task.Todo;
 
+/**
+ * Handles saving and loading of tasks to/from a file.
+ * Tasks are stored in a human-readable format that matches the display format.
+ */
 public class Storage {
     private final String filePath;
 
+     /**
+     * Creates a new Storage instance with the specified file path.
+     *
+     * @param filePath Path to the file where tasks will be stored.
+     */
     public Storage(String filePath) {
         this.filePath = filePath;
     }
 
+    /**
+     * Saves the given list of tasks to the file.
+     * Creates the data directory if it doesn't exist.
+     * Tasks are saved in display format with numbering.
+     *
+     * @param tasks List of tasks to save.
+     * @throws IOException If an error occurs while writing to the file.
+     */
     public void saveTasks(ArrayList<Task> tasks) throws IOException {
         File dataDir = new File("../../../data");
         if (!dataDir.exists()) {
@@ -32,6 +49,13 @@ public class Storage {
         fw.close();
     }
 
+    /**
+     * Loads tasks from the file.
+     * Returns an empty list if the file doesn't exist.
+     * Skips any lines that cannot be parsed correctly.
+     *
+     * @return ArrayList of tasks loaded from the file.
+     */
     public ArrayList<Task> loadTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
         try {
@@ -56,6 +80,13 @@ public class Storage {
         return tasks;
     }
 
+    /**
+     * Parses a task from the saved display format.
+     * Handles numbered lines like "1. [T][ ] task description".
+     *
+     * @param line Line from the file to parse.
+     * @return Task object if parsing succeeds, null otherwise.
+     */
     private Task parseTaskFromDisplayFormat(String line) {
         try {
             // Remove the number prefix (e.g., "1. ")
