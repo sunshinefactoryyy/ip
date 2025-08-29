@@ -3,7 +3,7 @@ package bobbot.parser;
 public class Parser {
 
     public enum CommandType {
-        BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, INVALID
+        BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, FIND, INVALID
     }
 
     public static class Command {
@@ -47,7 +47,11 @@ public class Parser {
             String remaining = trimmed.substring(6);
             String[] parts = remaining.split(" /from | /to ");
             return new Command(CommandType.EVENT, parts);
-        } else if (trimmed.startsWith("delete ")) {
+        } else if (trimmed.startsWith("find ")) {
+            String keyword = trimmed.substring(5).trim();
+            return new Command(CommandType.FIND, new String[]{keyword});
+        }
+        else if (trimmed.startsWith("delete ")) {
             String indexStr = trimmed.substring(7).trim();
             return new Command(CommandType.DELETE, new String[]{indexStr});
         } else {

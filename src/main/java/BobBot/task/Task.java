@@ -17,6 +17,10 @@ public class Task {
         isDone = false;
     }
 
+    public String getDescription() {
+        return this.desc;
+    }
+
     @Override
     public String toString() {
         return "[" + (isDone ? "X" : " ") + "] " + desc;
