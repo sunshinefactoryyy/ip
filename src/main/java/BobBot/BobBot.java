@@ -10,17 +10,38 @@ import bobbot.task.Todo;
 import bobbot.tasklist.TaskList;
 import bobbot.ui.Ui;
 
+/**
+ * Starting point of BobBot. Wires together I/O, parsing, storage and the task model.
+ * <p>
+ * Responsibilities:
+ * <ul>
+ *   <li>Reads user input in a loop</li>
+ *   <li>Delegates parsing to {@link bobbot.parser.Parser}</li>
+ *   <li>Mutates the task list and persists via {@link bobbot.storage.Storage}</li>
+ *   <li>Prints responses via {@link bobbot.ui.Ui}</li>
+ * </ul>
+ */
 public class BobBot {
     private Storage storage;
     private TaskList tasks;
     private Ui ui;
 
+    /**
+     * Constructs a new BobBot instance with the specified file path for data persistence.
+     * Initializes the user interface, storage system, and loads existing tasks from file.
+     *
+     * @param filePath the file path where task data will be stored and loaded from
+     */
     public BobBot(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
         tasks = new TaskList(storage.loadTasks());
     }
 
+    /**
+     * Launches the application and starts the main command loop.
+     * Displays welcome message, processes user commands until exit, and handles errors gracefully.
+     */
     public void run() {
         ui.showWelcome();
 
@@ -72,6 +93,13 @@ public class BobBot {
         ui.close();
     }
 
+    /**
+     * Handles the mark command to mark a task as completed.
+     * Retrieves the task by index, marks it as done, displays confirmation, and saves changes.
+     *
+     * @param args command arguments where args[0] is the 1-based task index
+     * @throws Exception if the task index is invalid or parsing fails
+     */
     private void handleMark(String[] args) throws Exception {
         int taskIndex = Integer.parseInt(args[0]) - 1;
         Task task = tasks.getTask(taskIndex);
@@ -80,6 +108,13 @@ public class BobBot {
         saveToFile();
     }
 
+    /**
+     * Handles the unmark command to mark a task as not completed.
+     * Retrieves the task by index, marks it as not done, displays confirmation, and saves changes.
+     *
+     * @param args command arguments where args[0] is the 1-based task index
+     * @throws Exception if the task index is invalid or parsing fails
+     */
     private void handleUnmark(String[] args) throws Exception {
         int taskIndex = Integer.parseInt(args[0]) - 1;
         Task task = tasks.getTask(taskIndex);
@@ -88,6 +123,14 @@ public class BobBot {
         saveToFile();
     }
 
+    /**
+     * Handles the todo command to create a new todo task.
+     * Creates a new Todo task with the given description, adds it to the task list,
+     * displays confirmation, and saves changes.
+     *
+     * @param args command arguments where args[0] is the task description
+     * @throws Exception if the description is empty or invalid
+     */
     private void handleTodo(String[] args) throws Exception {
         String desc = args[0];
         if (desc.isEmpty()) {
@@ -99,6 +142,14 @@ public class BobBot {
         saveToFile();
     }
 
+    /**
+     * Handles the deadline command to create a new deadline task.
+     * Creates a new Deadline task with description and due date, adds it to the task list,
+     * displays confirmation, and saves changes.
+     *
+     * @param args command arguments where args[0] is the description and args[1] is the deadline
+     * @throws Exception if the format is invalid or required arguments are missing
+     */
     private void handleDeadline(String[] args) throws Exception {
         if (args.length != 2) {
             ui.showError("BOBZ!!! Invalid format for deadline bobz. Try: deadline <desc> /by <time>");
@@ -110,6 +161,14 @@ public class BobBot {
         saveToFile();
     }
 
+    /**
+     * Handles the event command to create a new event task.
+     * Creates a new Event task with description, start time, and end time,
+     * adds it to the task list, displays confirmation, and saves changes.
+     *
+     * @param args command arguments where args[0] is description, args[1] is start time, args[2] is end time
+     * @throws Exception if the format is invalid or required arguments are missing
+     */
     private void handleEvent(String[] args) throws Exception {
         if (args.length != 3) {
             ui.showError("BOBZ!!! Invalid format for event bobz. Try: event <desc> /from <start> /to <end>");
@@ -121,6 +180,13 @@ public class BobBot {
         saveToFile();
     }
 
+    /**
+     * Handles the delete command to remove a task from the list.
+     * Removes the task at the specified index, displays confirmation, and saves changes.
+     *
+     * @param args command arguments where args[0] is the 1-based task index
+     * @throws Exception if the task index is invalid or parsing fails
+     */
     private void handleDelete(String[] args) throws Exception {
         int index = Integer.parseInt(args[0]) - 1;
         Task removedTask = tasks.deleteTask(index);
@@ -128,6 +194,10 @@ public class BobBot {
         saveToFile();
     }
 
+    /**
+     * Saves the current task list to the storage file.
+     * Displays an error message if saving fails.
+     */
     private void saveToFile() {
         try {
             storage.saveTasks(tasks.getTasks());
@@ -136,6 +206,12 @@ public class BobBot {
         }
     }
 
+    /**
+     * Main entry point for the BobBot application.
+     * Creates a new BobBot instance with default file path and starts the application.
+     *
+     * @param args command-line arguments (unused)
+     */
     public static void main(String[] args) {
         new BobBot("../../../data/bobbotTask.txt").run();
     }
