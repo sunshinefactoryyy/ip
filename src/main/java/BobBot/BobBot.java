@@ -22,9 +22,9 @@ import bobbot.ui.Ui;
  * </ul>
  */
 public class BobBot {
-    private Storage storage;
-    private TaskList tasks;
-    private Ui ui;
+    private final Storage storage;
+    private final TaskList tasks;
+    private final Ui ui;
 
     /**
      * Constructs a new BobBot instance with the specified file path for data persistence.
@@ -202,7 +202,7 @@ public class BobBot {
         try {
             storage.saveTasks(tasks.getTasks());
         } catch (Exception e) {
-            ui.showError("Something went wrong while saving: " + e.getMessage());
+            ui.showError("Something went wrong while savin bobz: " + e.getMessage());
         }
     }
 

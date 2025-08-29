@@ -9,6 +9,9 @@ import java.time.format.DateTimeParseException;
  * Supports both formatted datetime (yyyy-MM-dd HHmm) and free-form text.
  */
 public class Event extends Task {
+    private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+    private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy HHmm");
+
     protected LocalDateTime from;
     protected LocalDateTime to;
     protected String originalFromInput;
@@ -44,11 +47,11 @@ public class Event extends Task {
         
         try {
             // Try parsing yyyy-mm-dd HHmm format first (input format)
-            return LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm"));
+            return LocalDateTime.parse(dateTimeString, INPUT_FORMAT);
         } catch (DateTimeParseException e1) {
             try {
                 // Try parsing display format "MMM dd yyyy HHmm" (when loading from file)
-                return LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern("MMM dd yyyy HHmm"));
+                return LocalDateTime.parse(dateTimeString, DISPLAY_FORMAT);
             } catch (DateTimeParseException e2) {
                 // If both parsing attempts fail, return null and keep original string
                 return null;
@@ -65,23 +68,10 @@ public class Event extends Task {
      */
     @Override
     public String toString() {
-        String fromDisplay;
-        String toDisplay;
-        
-        if (from != null) {
-            fromDisplay = from.format(DateTimeFormatter.ofPattern("MMM dd yyyy HHmm"));
-        } else {
-            // use og if parse fail
-            fromDisplay = originalFromInput;
-        }
-        
-        if (to != null) {
-            toDisplay = to.format(DateTimeFormatter.ofPattern("MMM dd yyyy HHmm"));
-        } else {
-            // use og if parse fail
-            toDisplay = originalToInput;
-        }
+        String fromDisplay = (from != null) ? from.format(DISPLAY_FORMAT) : originalFromInput;
+        String toDisplay = (to != null) ? to.format(DISPLAY_FORMAT) : originalToInput;
 
         return "[E]" + super.toString() + " (from: " + fromDisplay + " to: " + toDisplay + ")";
+
     }
 }

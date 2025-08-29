@@ -49,9 +49,7 @@ public class TaskList {
      * @throws BobException if the index is out of bounds
      */
     public Task deleteTask(int index) throws BobException {
-        if (index < 0 || index >= tasks.size()) {
-            throw new BobException("BOBZ!!! That task number does not exist.");
-        }
+        validateIndex(index);
         return tasks.remove(index);
     }
 
@@ -64,9 +62,7 @@ public class TaskList {
      * @throws BobException if the index is out of bounds
      */
     public Task getTask(int index) throws BobException {
-        if (index < 0 || index >= tasks.size()) {
-            throw new BobException("BOBZ!!! That task number does not exist.");
-        }
+        validateIndex(index);
         return tasks.get(index);
     }
 
@@ -108,5 +104,11 @@ public class TaskList {
      */
     public ArrayList<Task> getTasks() {
         return tasks;
+    }
+
+    private void validateIndex(int index) throws BobException {
+        if (index < 0 || index >= tasks.size()) {
+            throw new BobException("BOBZ!!! That task number does not exist.");
+        }
     }
 }

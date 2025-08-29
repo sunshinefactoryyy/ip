@@ -9,6 +9,9 @@ import java.time.format.DateTimeParseException;
  * Supports both formatted dates (yyyy-MM-dd) and free-form text.
  */
 public class Deadline extends Task {
+    private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy");
+    
     protected LocalDate by;
     protected String originalInput;
 
@@ -35,11 +38,11 @@ public class Deadline extends Task {
     private LocalDate parseDate(String date) {
         try {
             // parse input format
-            return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            return LocalDate.parse(date, INPUT_FORMAT);
         } catch (DateTimeParseException e1) {
             try {
                 // parse when loading from file
-                return LocalDate.parse(date, DateTimeFormatter.ofPattern("MMM dd yyyy"));
+                return LocalDate.parse(date, DISPLAY_FORMAT);
             } catch (DateTimeParseException e2) {
                 return null;
             }
@@ -55,12 +58,7 @@ public class Deadline extends Task {
      */
     @Override
     public String toString() {
-        String dateDisplay;
-        if (by != null) {
-            dateDisplay = by.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
-        } else {
-            dateDisplay = originalInput;
-        }
+        String dateDisplay = (by != null) ? by.format(DISPLAY_FORMAT) : originalInput;
         return "[D]" + super.toString() + " (by: " + dateDisplay + ")";
     }
 }
