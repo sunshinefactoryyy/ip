@@ -9,7 +9,6 @@ import bobbot.task.Task;
 import bobbot.task.Todo;
 import bobbot.tasklist.TaskList;
 import bobbot.ui.Ui;
-
 /**
  * Starting point of BobBot. Wires together I/O, parsing, storage and the task model.
  * <p>
@@ -76,6 +75,9 @@ public class BobBot {
                         break;
                     case DELETE:
                         handleDelete(command.getArguments());
+                        break;
+                    case FIND:
+                        handleFind(command.getArguments());
                         break;
                     case INVALID:
                         throw new BobException("BOBZ!!! what are you saying bobz. Only use 'todo', 'deadline', 'event' and 'delete' bobz.");
@@ -192,6 +194,31 @@ public class BobBot {
         Task removedTask = tasks.deleteTask(index);
         ui.showTaskDeleted(removedTask, tasks.size());
         saveToFile();
+    }
+
+    /**
+     * Handles the find command to search for tasks containing a keyword.
+     * Performs case-insensitive search through all task descriptions.
+     *
+     * @param args Array containing the search keyword as the first element.
+     * @throws BobException If no keyword is provided or keyword is empty.
+     */
+    private void handleFind(String[] args) throws BobException {
+        if (args.length == 0 || args[0].isEmpty()) {
+            throw new BobException("BOBZ!!! The search keyword cannot be empty bobz.");
+        }
+
+        String keyword = args[0].toLowerCase();
+        TaskList matchingTasks = new TaskList();
+
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.get(i);
+            if (task.getDescription().toLowerCase().contains(keyword)) {
+                matchingTasks.addTask(task);
+            }
+        }
+
+        ui.showMatchingTasks(matchingTasks);
     }
 
     /**

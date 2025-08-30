@@ -33,6 +33,10 @@ public class Task {
         isDone = false;
     }
     
+    public String getDescription() {
+        return this.desc;
+    }
+
     /**
      * Returns a string representation of this task.
      * The format is [X] description if done, or [ ] description if not done.

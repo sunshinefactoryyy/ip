@@ -145,6 +145,24 @@ public class Ui {
     }
 
     /**
+     * Displays the list of tasks that match the search criteria.
+     * Shows "No matching tasks found" if the list is empty, otherwise
+     * displays all matching tasks with their index numbers.
+     *
+     * @param matchingTasks TaskList containing tasks that match the search keyword.
+     */
+    public void showMatchingTasks(TaskList matchingTasks) {
+        if (matchingTasks.isEmpty()) {
+            System.out.println("No matching tasks found bobz.");
+        } else {
+            System.out.println("Here are the matching tasks in your list bobz:");
+            for (int i = 0; i < matchingTasks.size(); i++) {
+                System.out.println((i + 1) + ". " + matchingTasks.get(i));
+            }
+        }
+    }
+
+    /**
      * Reads a command from user input.
      * Waits for the user to enter a line of text and returns it.
      *

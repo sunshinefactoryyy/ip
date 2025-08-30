@@ -11,24 +11,7 @@ public class Parser {
      * Each type corresponds to a specific user action or operation.
      */
     public enum CommandType {
-        /** Exit the application */
-        BYE, 
-        /** List all tasks */
-        LIST, 
-        /** Mark a task as completed */
-        MARK, 
-        /** Mark a task as not completed */
-        UNMARK, 
-        /** Create a new todo task */
-        TODO, 
-        /** Create a new deadline task */
-        DEADLINE, 
-        /** Create a new event task */
-        EVENT, 
-        /** Delete an existing task */
-        DELETE, 
-        /** Invalid or unrecognized command */
-        INVALID
+        BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, FIND, INVALID
     }
 
     /**
@@ -105,7 +88,11 @@ public class Parser {
             return parseDeadlineCommand(trimmed);
         } else if (trimmed.startsWith("event ")) {
             return parseEventCommand(trimmed);
-        } else if (trimmed.startsWith("delete ")) {
+        } else if (trimmed.startsWith("find ")) {
+            String keyword = trimmed.substring(5).trim();
+            return new Command(CommandType.FIND, new String[]{keyword});
+        }
+        else if (trimmed.startsWith("delete ")) {
             return parseDeleteCommand(trimmed);
         } else {
             return new Command(CommandType.INVALID, new String[0]);
