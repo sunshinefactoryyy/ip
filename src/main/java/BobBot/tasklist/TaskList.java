@@ -19,6 +19,7 @@ public class TaskList {
      */
     public TaskList() {
         this.tasks = new ArrayList<>();
+        assert tasks != null;
     }
 
     /**
@@ -28,7 +29,9 @@ public class TaskList {
      * @param tasks the initial collection of tasks to populate this TaskList
      */
     public TaskList(ArrayList<Task> tasks) {
+        assert tasks != null;
         this.tasks = tasks;
+        assert this.tasks != null;
     }
 
     /**
@@ -37,6 +40,7 @@ public class TaskList {
      * @param task the Task to be added to the list
      */
     public void addTask(Task task) {
+        assert task != null;
         tasks.add(task);
     }
 
@@ -50,6 +54,9 @@ public class TaskList {
      */
     public Task deleteTask(int index) throws BobException {
         validateIndex(index);
+
+        assert index >= 0 && index < tasks.size();
+
         return tasks.remove(index);
     }
 
@@ -63,6 +70,9 @@ public class TaskList {
      */
     public Task getTask(int index) throws BobException {
         validateIndex(index);
+
+        assert index >= 0 && index < tasks.size();
+
         return tasks.get(index);
     }
 
@@ -75,6 +85,8 @@ public class TaskList {
      * @throws IndexOutOfBoundsException if the index is out of bounds
      */
     public Task get(int index) {
+        assert index >= 0 && index < tasks.size();
+
         return tasks.get(index);
     }
 
@@ -84,7 +96,10 @@ public class TaskList {
      * @return the size of the task collection
      */
     public int size() {
-        return tasks.size();
+        int size = tasks.size();
+        assert size >= 0;
+
+        return size;
     }
 
     /**
@@ -93,7 +108,10 @@ public class TaskList {
      * @return true if the TaskList is empty, false otherwise
      */
     public boolean isEmpty() {
-        return tasks.isEmpty();
+        boolean isEmpty = tasks.isEmpty();
+        assert (isEmpty && tasks.size() == 0) || (!isEmpty && tasks.size() > 0);
+
+        return isEmpty;
     }
 
     /**
@@ -103,10 +121,14 @@ public class TaskList {
      * @return the ArrayList containing all tasks
      */
     public ArrayList<Task> getTasks() {
+        assert tasks != null;
+
         return tasks;
     }
 
     private void validateIndex(int index) throws BobException {
+        assert tasks != null;
+        
         if (index < 0 || index >= tasks.size()) {
             throw new BobException("BOBZ!!! That task number does not exist.");
         }

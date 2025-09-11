@@ -32,6 +32,8 @@ public class BobBot {
      * @param filePath the file path where task data will be stored and loaded from
      */
     public BobBot(String filePath) {
+        assert filePath != null : "File path cannot be null bobz";
+
         ui = new Ui();
         storage = new Storage(filePath);
         tasks = new TaskList(storage.loadTasks());
@@ -46,6 +48,10 @@ public class BobBot {
     public String getResponse(String userInput) {
         try {
             Parser.Command command = Parser.parseCommand(userInput);
+            assert command != null : "Parser should never return null command bobz";
+
+            String response = processCommand(command);
+            assert response != null : "Response should never be null bobz";
             return processCommand(command);
         } catch (BobException exception) {
             return exception.getMessage();
@@ -77,16 +83,20 @@ public class BobBot {
             case LIST:
                 return formatTaskList();
             case MARK:
+                assert command.getArguments().length > 0;
                 return processMarkCommand(command.getArguments());
             case UNMARK:
+                assert command.getArguments().length > 0;
                 return processUnmarkCommand(command.getArguments());
             case TODO:
+                assert command.getArguments().length > 0;
                 return processTodoCommand(command.getArguments());
             case DEADLINE:
                 return processDeadlineCommand(command.getArguments());
             case EVENT:
                 return processEventCommand(command.getArguments());
             case DELETE:
+                assert command.getArguments().length > 0;
                 return processDeleteCommand(command.getArguments());
             case FIND:
                 return processFindCommand(command.getArguments());
@@ -103,6 +113,7 @@ public class BobBot {
      * @return formatted string representation of all tasks
      */
     private String formatTaskList() {
+        assert tasks != null;
         if (tasks.isEmpty()) {
             return "No items in the list bobz.";
         }
@@ -122,8 +133,14 @@ public class BobBot {
      * @throws Exception if the task index is invalid
      */
     private String processMarkCommand(String[] arguments) throws Exception {
+        assert arguments.length > 0;
+
         int taskIndex = parseTaskIndex(arguments[0]);
+        assert taskIndex >= 0;
+
         Task task = tasks.getTask(taskIndex);
+        assert task != null;
+
         task.markAsDone();
         saveTasksToStorage();
         return String.format("Nice bobz! I've marked this task as done bobz:\n  %s", task);
@@ -137,8 +154,12 @@ public class BobBot {
      * @throws Exception if the task index is invalid
      */
     private String processUnmarkCommand(String[] arguments) throws Exception {
+        assert arguments.length > 0;
+
         int taskIndex = parseTaskIndex(arguments[0]);
         Task task = tasks.getTask(taskIndex);
+        assert task != null;
+
         task.markAsNotDone();
         saveTasksToStorage();
         return String.format("OK bobz, I've marked this task as not done yet bobz:\n  %s", task);
@@ -152,6 +173,8 @@ public class BobBot {
      * @throws BobException if the description is empty
      */
     private String processTodoCommand(String[] arguments) throws BobException {
+        assert arguments.length > 0;
+
         String description = arguments[0];
         if (description.isEmpty()) {
             throw new BobException("BOBZ!!! The description of a todo cannot be empty bobz.");
@@ -159,6 +182,8 @@ public class BobBot {
         
         Task newTask = new Todo(description);
         tasks.addTask(newTask);
+        assert tasks.size() > 0;
+
         saveTasksToStorage();
         
         return String.format("Got it bobz. I've added this task:\n  %s\nNow you have %d tasks in the list bobz.",
@@ -172,12 +197,15 @@ public class BobBot {
      * @return confirmation message or error message
      */
     private String processDeadlineCommand(String[] arguments) {
+        assert arguments.length > 0;
+
         if (arguments.length != 2) {
             return "BOBZ!!! Invalid format for deadline bobz. Try: deadline <desc> /by <time>";
         }
         
         Task newTask = new Deadline(arguments[0].trim(), arguments[1].trim());
         tasks.addTask(newTask);
+
         saveTasksToStorage();
         
         return String.format("Got it bobz. I've added this task:\n  %s\nNow you have %d tasks in the list bobz.",
@@ -191,12 +219,15 @@ public class BobBot {
      * @return confirmation message or error message
      */
     private String processEventCommand(String[] arguments) {
+        assert arguments.length > 0;
+
         if (arguments.length != 3) {
             return "BOBZ!!! Invalid format for event bobz. Try: event <desc> /from <start> /to <end>";
         }
         
         Task newTask = new Event(arguments[0].trim(), arguments[1].trim(), arguments[2].trim());
         tasks.addTask(newTask);
+
         saveTasksToStorage();
         
         return String.format("Got it bobz. I've added this task:\n  %s\nNow you have %d tasks in the list bobz.",
@@ -211,8 +242,12 @@ public class BobBot {
      * @throws Exception if the task index is invalid
      */
     private String processDeleteCommand(String[] arguments) throws Exception {
+        assert arguments.length > 0;
+
         int taskIndex = parseTaskIndex(arguments[0]);
         Task removedTask = tasks.deleteTask(taskIndex);
+        assert removedTask != null;
+
         saveTasksToStorage();
         
         return String.format("Noted bobz. I've removed this task bobz:\n  %s\nNow you have %d tasks in the list bobz.",
@@ -227,12 +262,17 @@ public class BobBot {
      * @throws BobException if no keyword is provided
      */
     private String processFindCommand(String[] arguments) throws BobException {
+        assert arguments.length > 0;
+
         if (arguments.length == 0 || arguments[0].isEmpty()) {
             throw new BobException("BOBZ!!! The search keyword cannot be empty bobz.");
         }
 
         String keyword = arguments[0].toLowerCase();
+        assert !keyword.isEmpty();
+
         TaskList matchingTasks = findTasksContainingKeyword(keyword);
+        assert matchingTasks != null;
 
         if (matchingTasks.isEmpty()) {
             return "No matching tasks found bobz.";
@@ -252,10 +292,14 @@ public class BobBot {
      * @return a TaskList containing all matching tasks
      */
     private TaskList findTasksContainingKeyword(String keyword) {
+        assert keyword != null;
+        assert tasks != null;
         TaskList matchingTasks = new TaskList();
         
         for (int i = 0; i < tasks.size(); i++) {
             Task task = tasks.get(i);
+            assert task != null;
+
             if (task.getDescription().toLowerCase().contains(keyword)) {
                 matchingTasks.addTask(task);
             }
@@ -272,7 +316,12 @@ public class BobBot {
      * @throws NumberFormatException if the string is not a valid number
      */
     private int parseTaskIndex(String indexString) throws NumberFormatException {
-        return Integer.parseInt(indexString) - 1;
+        assert indexString != null;
+
+        int parsedIndex = Integer.parseInt(indexString);
+        assert parsedIndex > 0;
+
+        return parsedIndex;
     }
 
     /**
@@ -280,6 +329,9 @@ public class BobBot {
      * Prints an error message if saving fails.
      */
     private void saveTasksToStorage() {
+        assert storage != null;
+        assert tasks != null;
+        
         try {
             storage.saveTasks(tasks.getTasks());
         } catch (Exception exception) {
