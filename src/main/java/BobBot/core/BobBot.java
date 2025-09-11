@@ -1,5 +1,9 @@
 package bobbot.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import bobbot.command.CommandHandler;
 import bobbot.exception.BobException;
 import bobbot.parser.Parser;
 import bobbot.storage.Storage;
@@ -26,6 +30,8 @@ public class BobBot {
     private final TaskList tasks;
     private final Ui ui;
 
+    private final Map<Parser.CommandType, CommandHandler> commandHandlers;
+
     /**
      * Constructs a new BobBot instance with the specified file path for data persistence.
      *
@@ -35,6 +41,27 @@ public class BobBot {
         ui = new Ui();
         storage = new Storage(filePath);
         tasks = new TaskList(storage.loadTasks());
+        commandHandlers = initializeCommandHandlers();
+    }
+
+    /**
+     * Initializes the command handlers map with appropriate handlers for each command type.
+     *
+     * @return a map of command types to their corresponding handlers
+     */
+    private Map<Parser.CommandType, CommandHandler> initializeCommandHandlers() {
+        Map<Parser.CommandType, CommandHandler> handlers = new HashMap<>();
+        
+        handlers.put(Parser.CommandType.LIST, args -> formatTaskList());
+        handlers.put(Parser.CommandType.MARK, this::handleMarkCommand);
+        handlers.put(Parser.CommandType.UNMARK, this::handleUnmarkCommand);
+        handlers.put(Parser.CommandType.TODO, this::handleTodoCommand);
+        handlers.put(Parser.CommandType.DEADLINE, this::handleDeadlineCommand);
+        handlers.put(Parser.CommandType.EVENT, this::handleEventCommand);
+        handlers.put(Parser.CommandType.DELETE, this::handleDeleteCommand);
+        handlers.put(Parser.CommandType.FIND, this::handleFindCommand);
+        
+        return handlers;
     }
 
     /**
@@ -46,7 +73,7 @@ public class BobBot {
     public String getResponse(String userInput) {
         try {
             Parser.Command command = Parser.parseCommand(userInput);
-            return processCommand(command);
+            return handleCommand(command);
         } catch (BobException exception) {
             return exception.getMessage();
         } catch (Exception exception) {
@@ -70,30 +97,18 @@ public class BobBot {
      * @return the response string for the command
      * @throws Exception if there's an error processing the command
      */
-    private String processCommand(Parser.Command command) throws Exception {
+    private String handleCommand(Parser.Command command) throws Exception {
         switch (command.getType()) {
-            case BYE:
-                return GOODBYE_MESSAGE;
-            case LIST:
-                return formatTaskList();
-            case MARK:
-                return processMarkCommand(command.getArguments());
-            case UNMARK:
-                return processUnmarkCommand(command.getArguments());
-            case TODO:
-                return processTodoCommand(command.getArguments());
-            case DEADLINE:
-                return processDeadlineCommand(command.getArguments());
-            case EVENT:
-                return processEventCommand(command.getArguments());
-            case DELETE:
-                return processDeleteCommand(command.getArguments());
-            case FIND:
-                return processFindCommand(command.getArguments());
-            case INVALID:
-                return INVALID_COMMAND_MESSAGE;
-            default:
-                return GENERIC_ERROR_MESSAGE;
+        case BYE:
+            return GOODBYE_MESSAGE;
+        case INVALID:
+            return INVALID_COMMAND_MESSAGE;
+        default:
+            CommandHandler handler = commandHandlers.get(command.getType());
+            if (handler != null) {
+                return handler.handle(command.getArguments());
+            }
+            return GENERIC_ERROR_MESSAGE;
         }
     }
 
@@ -121,7 +136,7 @@ public class BobBot {
      * @return confirmation message
      * @throws Exception if the task index is invalid
      */
-    private String processMarkCommand(String[] arguments) throws Exception {
+    private String handleMarkCommand(String[] arguments) throws Exception {
         int taskIndex = parseTaskIndex(arguments[0]);
         Task task = tasks.getTask(taskIndex);
         task.markAsDone();
@@ -136,7 +151,7 @@ public class BobBot {
      * @return confirmation message
      * @throws Exception if the task index is invalid
      */
-    private String processUnmarkCommand(String[] arguments) throws Exception {
+    private String handleUnmarkCommand(String[] arguments) throws Exception {
         int taskIndex = parseTaskIndex(arguments[0]);
         Task task = tasks.getTask(taskIndex);
         task.markAsNotDone();
@@ -151,7 +166,7 @@ public class BobBot {
      * @return confirmation message
      * @throws BobException if the description is empty
      */
-    private String processTodoCommand(String[] arguments) throws BobException {
+    private String handleTodoCommand(String[] arguments) throws BobException {
         String description = arguments[0];
         if (description.isEmpty()) {
             throw new BobException("BOBZ!!! The description of a todo cannot be empty bobz.");
@@ -171,7 +186,7 @@ public class BobBot {
      * @param arguments command arguments containing description and deadline
      * @return confirmation message or error message
      */
-    private String processDeadlineCommand(String[] arguments) {
+    private String handleDeadlineCommand(String[] arguments) {
         if (arguments.length != 2) {
             return "BOBZ!!! Invalid format for deadline bobz. Try: deadline <desc> /by <time>";
         }
@@ -190,7 +205,7 @@ public class BobBot {
      * @param arguments command arguments containing description, start time, and end time
      * @return confirmation message or error message
      */
-    private String processEventCommand(String[] arguments) {
+    private String handleEventCommand(String[] arguments) {
         if (arguments.length != 3) {
             return "BOBZ!!! Invalid format for event bobz. Try: event <desc> /from <start> /to <end>";
         }
@@ -210,7 +225,7 @@ public class BobBot {
      * @return confirmation message
      * @throws Exception if the task index is invalid
      */
-    private String processDeleteCommand(String[] arguments) throws Exception {
+    private String handleDeleteCommand(String[] arguments) throws Exception {
         int taskIndex = parseTaskIndex(arguments[0]);
         Task removedTask = tasks.deleteTask(taskIndex);
         saveTasksToStorage();
@@ -226,7 +241,7 @@ public class BobBot {
      * @return formatted list of matching tasks
      * @throws BobException if no keyword is provided
      */
-    private String processFindCommand(String[] arguments) throws BobException {
+    private String handleFindCommand(String[] arguments) throws BobException {
         if (arguments.length == 0 || arguments[0].isEmpty()) {
             throw new BobException("BOBZ!!! The search keyword cannot be empty bobz.");
         }
