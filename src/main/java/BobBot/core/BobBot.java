@@ -13,7 +13,7 @@ import bobbot.task.Task;
 import bobbot.task.Todo;
 import bobbot.tasklist.TaskList;
 import bobbot.ui.Ui;
-
+import bobbot.undo.UndoableAction;
 /**
  * Main controller class for BobBot that handles both CLI and GUI interactions.
  * Coordinates between the parser, storage, task list, and user interface components.
@@ -25,10 +25,12 @@ public class BobBot {
         "BOBZ!!! what are you saying bobz. Only use 'todo', 'deadline', 'event' and 'delete' bobz.";
     private static final String GENERIC_ERROR_MESSAGE = 
         "BOBZ!!!Something went wrong, please check your command format bobz.";
+    private static final String NO_UNDO_MESSAGE = "BOBZ!!! There's nothing to undo bobz.";
 
     private final Storage storage;
     private final TaskList tasks;
     private final Ui ui;
+    private UndoableAction lastAction;
 
     private final Map<Parser.CommandType, CommandHandler> commandHandlers;
 
@@ -43,6 +45,7 @@ public class BobBot {
         ui = new Ui();
         storage = new Storage(filePath);
         tasks = new TaskList(storage.loadTasks());
+        lastAction = null;
         commandHandlers = initializeCommandHandlers();
     }
 
@@ -62,6 +65,7 @@ public class BobBot {
         handlers.put(Parser.CommandType.EVENT, this::handleEventCommand);
         handlers.put(Parser.CommandType.DELETE, this::handleDeleteCommand);
         handlers.put(Parser.CommandType.FIND, this::handleFindCommand);
+        handlers.put(Parser.CommandType.UNDO, this::handleUndoCommand);
         
         return handlers;
     }
@@ -80,7 +84,7 @@ public class BobBot {
             String response = handleCommand(command);
             assert response != null : "Response should never be null bobz";
 
-            return handleCommand(command);
+            return response;
 
         } catch (BobException exception) {
             return exception.getMessage();
@@ -155,6 +159,8 @@ public class BobBot {
         Task task = tasks.getTask(taskIndex);
         assert task != null;
 
+        lastAction = new UndoableAction(UndoableAction.ActionType.MARK_TASK, task);
+
         task.markAsDone();
         saveTasksToStorage();
         return String.format("Nice bobz! I've marked this task as done bobz:\n  %s", task);
@@ -173,6 +179,8 @@ public class BobBot {
         int taskIndex = parseTaskIndex(arguments[0]);
         Task task = tasks.getTask(taskIndex);
         assert task != null;
+
+        lastAction = new UndoableAction(UndoableAction.ActionType.UNMARK_TASK, task);
 
         task.markAsNotDone();
         saveTasksToStorage();
@@ -198,6 +206,8 @@ public class BobBot {
         tasks.addTask(newTask);
         assert tasks.size() > 0;
 
+        lastAction = new UndoableAction(UndoableAction.ActionType.ADD_TASK, newTask);
+
         saveTasksToStorage();
         
         return String.format("Got it bobz. I've added this task:\n  %s\nNow you have %d tasks in the list bobz.",
@@ -219,6 +229,8 @@ public class BobBot {
         
         Task newTask = new Deadline(arguments[0].trim(), arguments[1].trim());
         tasks.addTask(newTask);
+
+        lastAction = new UndoableAction(UndoableAction.ActionType.ADD_TASK, newTask);
 
         saveTasksToStorage();
         
@@ -242,6 +254,8 @@ public class BobBot {
         Task newTask = new Event(arguments[0].trim(), arguments[1].trim(), arguments[2].trim());
         tasks.addTask(newTask);
 
+        lastAction = new UndoableAction(UndoableAction.ActionType.ADD_TASK, newTask);
+
         saveTasksToStorage();
         
         return String.format("Got it bobz. I've added this task:\n  %s\nNow you have %d tasks in the list bobz.",
@@ -259,6 +273,11 @@ public class BobBot {
         assert arguments.length > 0;
 
         int taskIndex = parseTaskIndex(arguments[0]);
+        Task taskToDelete = tasks.getTask(taskIndex);
+        assert taskToDelete != null;
+
+        lastAction = new UndoableAction(UndoableAction.ActionType.DELETE_TASK, taskToDelete, taskIndex);
+
         Task removedTask = tasks.deleteTask(taskIndex);
         assert removedTask != null;
 
@@ -300,6 +319,65 @@ public class BobBot {
     }
 
     /**
+     * Processes the undo command to reverse the last action.
+     *
+     * @param arguments command arguments (not used for undo)
+     * @return confirmation message or error message if nothing to undo
+     * @throws Exception if there's an error during undo
+     */
+    private String handleUndoCommand(String[] arguments) throws Exception {
+        if (lastAction == null) {
+            return NO_UNDO_MESSAGE;
+        }
+
+        String result;
+        switch (lastAction.getActionType()) {
+        case ADD_TASK:
+            // Undo add by removing the task
+            Task taskToRemove = lastAction.getTask();
+            // Find and remove the task from the list
+            for (int i = 0; i < tasks.size(); i++) {
+                if (tasks.get(i) == taskToRemove) {
+                    tasks.deleteTask(i);
+                    break;
+                }
+            }
+            result = String.format("Undone bobz! Removed task:\n  %s", taskToRemove);
+            break;
+            
+        case DELETE_TASK:
+            // Undo delete by adding the task back at its original position
+            Task taskToRestore = lastAction.getTask();
+            int originalIndex = lastAction.getIndex();
+            // Add task back at the correct position
+            tasks.getTasks().add(originalIndex, taskToRestore);
+            result = String.format("Undone bobz! Restored task:\n  %s", taskToRestore);
+            break;
+            
+        case MARK_TASK:
+            // Undo mark by unmarking the task
+            lastAction.getTask().markAsNotDone();
+            result = String.format("Undone bobz! Unmarked task:\n  %s", lastAction.getTask());
+            break;
+            
+        case UNMARK_TASK:
+            // Undo unmark by marking the task
+            lastAction.getTask().markAsDone();
+            result = String.format("Undone bobz! Marked task:\n  %s", lastAction.getTask());
+            break;
+            
+        default:
+            return GENERIC_ERROR_MESSAGE;
+        }
+
+        // Clear the last action after undo (can't undo an undo)
+        lastAction = null;
+        saveTasksToStorage();
+        
+        return result;
+    }
+
+    /**
      * Finds all tasks that contain the given keyword in their description.
      *
      * @param keyword the keyword to search for (case-insensitive)
@@ -335,7 +413,7 @@ public class BobBot {
         int parsedIndex = Integer.parseInt(indexString);
         assert parsedIndex > 0;
 
-        return parsedIndex;
+        return parsedIndex - 1;
     }
 
     /**

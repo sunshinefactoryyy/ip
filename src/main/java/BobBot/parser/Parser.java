@@ -17,7 +17,7 @@ public class Parser {
      * Each type corresponds to a specific user action or operation.
      */
     public enum CommandType {
-        BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, FIND, INVALID
+        BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, FIND, UNDO, INVALID
     }
 
     /**
@@ -89,6 +89,8 @@ public class Parser {
             result = new Command(CommandType.BYE, new String[0]);
         } else if (trimmed.equals("list")) {
             result = new Command(CommandType.LIST, new String[0]);
+        } else if (trimmed.equals("undo")) {
+            result = new Command(CommandType.UNDO, new String[0]);
         } else if (trimmed.startsWith("mark ")) {
             result = parseMarkCommand(trimmed);
         } else if (trimmed.startsWith("unmark ")) {
