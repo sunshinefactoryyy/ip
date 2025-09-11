@@ -78,31 +78,38 @@ public class Parser {
      * @return a Command object representing the parsed command and its arguments
      */
     public static Command parseCommand(String input) {
-        String trimmed = input.trim();
+        assert input != null;
 
+        String trimmed = input.trim();
+        assert !trimmed.isEmpty();
+        
+        Command result;
+        
         if (trimmed.equals("bye")) {
-            return new Command(CommandType.BYE, new String[0]);
+            result = new Command(CommandType.BYE, new String[0]);
         } else if (trimmed.equals("list")) {
-            return new Command(CommandType.LIST, new String[0]);
+            result = new Command(CommandType.LIST, new String[0]);
         } else if (trimmed.startsWith("mark ")) {
-            return parseMarkCommand(trimmed);
+            result = parseMarkCommand(trimmed);
         } else if (trimmed.startsWith("unmark ")) {
-            return parseUnmarkCommand(trimmed);
+            result = parseUnmarkCommand(trimmed);
         } else if (trimmed.startsWith("todo ")) {
-            return parseTodoCommand(trimmed);
+            result = parseTodoCommand(trimmed);
         } else if (trimmed.startsWith("deadline ")) {
-            return parseDeadlineCommand(trimmed);
+            result = parseDeadlineCommand(trimmed);
         } else if (trimmed.startsWith("event ")) {
-            return parseEventCommand(trimmed);
+            result = parseEventCommand(trimmed);
         } else if (trimmed.startsWith("find ")) {
             String keyword = trimmed.substring(FIND_COMMAND_PREFIX_LENGTH).trim();
             return new Command(CommandType.FIND, new String[]{keyword});
         }
         else if (trimmed.startsWith("delete ")) {
-            return parseDeleteCommand(trimmed);
+            result = parseDeleteCommand(trimmed);
         } else {
-            return new Command(CommandType.INVALID, new String[0]);
+            result = new Command(CommandType.INVALID, new String[0]);
         }
+        
+        return result;
     }
 
     private static Command parseMarkCommand(String trimmed) {
