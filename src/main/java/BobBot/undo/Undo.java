@@ -6,7 +6,7 @@ import bobbot.task.Task;
  * Represents an action that can be undone in BobBot.
  * Stores the type of action and the necessary data to reverse it.
  */
-public class UndoableAction {
+public class Undo {
     
     /**
      * Enumeration of action types that can be undone.
@@ -25,7 +25,7 @@ public class UndoableAction {
      * @param actionType the type of action performed
      * @param task the task that was affected
      */
-    public UndoableAction(ActionType actionType, Task task) {
+    public Undo(ActionType actionType, Task task) {
         this.actionType = actionType;
         this.task = task;
         this.index = -1; // Not needed for add/mark/unmark
@@ -38,7 +38,7 @@ public class UndoableAction {
      * @param task the task that was deleted
      * @param index the original index where the task was located
      */
-    public UndoableAction(ActionType actionType, Task task, int index) {
+    public Undo(ActionType actionType, Task task, int index) {
         this.actionType = actionType;
         this.task = task;
         this.index = index;
