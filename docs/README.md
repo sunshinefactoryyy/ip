@@ -1,6 +1,6 @@
 # BobBot Documentation
 
-<img src="Ui.png" alt="Alt Text" width="300" height="200">
+<img src="Ui.png" alt="Alt Text" width="300" height="700">
 
 > "KING BOB!!!!" ~BobBot
 
