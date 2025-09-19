@@ -39,6 +39,7 @@ public class MainWindow extends AnchorPane {
     private void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
         loadImages();
+        applyCssClasses();
     }
 
     /**
@@ -54,6 +55,20 @@ public class MainWindow extends AnchorPane {
             userImage = new Image("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==");
             botImage = userImage;
         }
+    }
+
+    /**
+     * Applies CSS style classes to UI components for external stylesheet control.
+     * Assigns predefined CSS classes to the main interface elements including
+     * background, scroll pane, dialog container, input field, and send button.
+     */
+    private void applyCssClasses() {
+        // Apply CSS classes defined in styles.css
+        this.getStyleClass().add("chat-background");
+        scrollPane.getStyleClass().add("chat-scroll-pane");
+        dialogContainer.getStyleClass().add("chat-container");
+        userInput.getStyleClass().add("chat-input");
+        sendButton.getStyleClass().add("send-button");
     }
 
     /**

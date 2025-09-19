@@ -12,12 +12,15 @@ public class Parser {
     private static final int EVENT_COMMAND_PREFIX_LENGTH = 6;
     private static final int DELETE_COMMAND_PREFIX_LENGTH = 7;
     private static final int FIND_COMMAND_PREFIX_LENGTH = 5;
+    private static final String DEADLINE_DELIMITER = " /by ";
+    private static final String EVENT_FROM_DELIMITER = " /from ";
+    private static final String EVENT_TO_DELIMITER = " /to ";
         /**
      * Enumeration of all supported command types in BobBot.
      * Each type corresponds to a specific user action or operation.
      */
     public enum CommandType {
-        BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, FIND, UNDO, INVALID
+        BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, FIND, UNDO, INVALID, HELP
     }
 
     /**

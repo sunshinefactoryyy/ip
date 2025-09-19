@@ -1,0 +1,50 @@
+/* Chat Background with Image */
+.root {
+    -fx-background-image: url("../images/Palace.jpg");
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+    
+    /* Optional: Add overlay for better text readability */
+    /* -fx-background-color: rgba(0, 0, 0, 0.4); */
+    
+    /* Alternative sizing options: */
+    /* -fx-background-size: stretch; */ /* Stretch to fill */
+    /* -fx-background-size: 100% 100%; */ /* Force fit */
+    /* -fx-background-size: contain; */ /* Fit within bounds */
+}
+
+.chat-container {
+    -fx-background-color: transparent;
+    -fx-spacing: 15;
+    -fx-padding: 5;
+}
+
+.chat-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.chat-scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Input styling with better contrast */
+.chat-input {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-border-color: rgba(255, 255, 255, 0.5);
+    -fx-border-radius: 25;
+    -fx-background-radius: 25;
+    -fx-padding: 10 15 10 15;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0.3, 0, 2);
+}
+
+.send-button {
+    -fx-background-color: rgba(76, 175, 80, 0.95);
+    -fx-text-fill: white;
+    -fx-border-radius: 25;
+    -fx-background-radius: 25;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0.3, 0, 2);
+}

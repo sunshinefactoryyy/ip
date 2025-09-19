@@ -15,6 +15,7 @@ public class Main extends Application {
     private static final String FXML_FILE_PATH = "/view/MainWindow.fxml";
     private static final String APPLICATION_TITLE = "BobBot";
     private static final String DATA_FILE_PATH = "data/bobbotTask.txt";
+    private static final String CSS_FILE_PATH = "/css/styles.css";
     private static final int MIN_WINDOW_HEIGHT = 220;
     private static final int MIN_WINDOW_WIDTH = 417;
 
@@ -54,6 +55,10 @@ public class Main extends Application {
         AnchorPane mainWindow = fxmlLoader.load();
         
         Scene scene = new Scene(mainWindow);
+
+        String cssFile = this.getClass().getResource(CSS_FILE_PATH).toExternalForm();
+        scene.getStylesheets().add(cssFile);
+
         primaryStage.setScene(scene);
         primaryStage.setTitle(APPLICATION_TITLE);
         primaryStage.setMinHeight(MIN_WINDOW_HEIGHT);

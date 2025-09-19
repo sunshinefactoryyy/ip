@@ -8,11 +8,11 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bobbot.gui.MainWindow">
    <children>
-      <TextField fx:id="userInput" layoutY="558" onAction="#handleUserInput" prefHeight="41" prefWidth="324" promptText="Type your message here..." AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="76.0" />
-      <Button fx:id="sendButton" layoutX="324" layoutY="558" mnemonicParsing="false" onAction="#handleUserInput" prefHeight="41" prefWidth="55" text="Send" AnchorPane.bottomAnchor="1.0" AnchorPane.rightAnchor="1.0" />
-      <ScrollPane fx:id="scrollPane" prefHeight="557" prefWidth="400" AnchorPane.bottomAnchor="42.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <TextField fx:id="userInput" onAction="#handleUserInput" prefHeight="41" promptText="Type your message here..." AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="76.0" />
+      <Button fx:id="sendButton" mnemonicParsing="false" onAction="#handleUserInput" prefHeight="41" prefWidth="55" text="Send" AnchorPane.bottomAnchor="1.0" AnchorPane.rightAnchor="1.0" />
+      <ScrollPane fx:id="scrollPane" fitToWidth="true" AnchorPane.bottomAnchor="42.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
-            <VBox fx:id="dialogContainer" prefHeight="552" prefWidth="388" />
+            <VBox fx:id="dialogContainer" prefHeight="552" />
          </content>
       </ScrollPane>
    </children>

@@ -13,7 +13,7 @@ import bobbot.task.Task;
 import bobbot.task.Todo;
 import bobbot.tasklist.TaskList;
 import bobbot.ui.Ui;
-import bobbot.undo.UndoableAction;
+import bobbot.undo.Undo;
 /**
  * Main controller class for BobBot that handles both CLI and GUI interactions.
  * Coordinates between the parser, storage, task list, and user interface components.
@@ -30,7 +30,7 @@ public class BobBot {
     private final Storage storage;
     private final TaskList tasks;
     private final Ui ui;
-    private UndoableAction lastAction;
+    private Undo lastAction;
 
     private final Map<Parser.CommandType, CommandHandler> commandHandlers;
 
@@ -159,7 +159,7 @@ public class BobBot {
         Task task = tasks.getTask(taskIndex);
         assert task != null;
 
-        lastAction = new UndoableAction(UndoableAction.ActionType.MARK_TASK, task);
+        lastAction = new Undo(Undo.ActionType.MARK_TASK, task);
 
         task.markAsDone();
         saveTasksToStorage();
@@ -180,7 +180,7 @@ public class BobBot {
         Task task = tasks.getTask(taskIndex);
         assert task != null;
 
-        lastAction = new UndoableAction(UndoableAction.ActionType.UNMARK_TASK, task);
+        lastAction = new Undo(Undo.ActionType.UNMARK_TASK, task);
 
         task.markAsNotDone();
         saveTasksToStorage();
@@ -206,7 +206,7 @@ public class BobBot {
         tasks.addTask(newTask);
         assert tasks.size() > 0;
 
-        lastAction = new UndoableAction(UndoableAction.ActionType.ADD_TASK, newTask);
+        lastAction = new Undo(Undo.ActionType.ADD_TASK, newTask);
 
         saveTasksToStorage();
         
@@ -230,7 +230,7 @@ public class BobBot {
         Task newTask = new Deadline(arguments[0].trim(), arguments[1].trim());
         tasks.addTask(newTask);
 
-        lastAction = new UndoableAction(UndoableAction.ActionType.ADD_TASK, newTask);
+        lastAction = new Undo(Undo.ActionType.ADD_TASK, newTask);
 
         saveTasksToStorage();
         
@@ -254,7 +254,7 @@ public class BobBot {
         Task newTask = new Event(arguments[0].trim(), arguments[1].trim(), arguments[2].trim());
         tasks.addTask(newTask);
 
-        lastAction = new UndoableAction(UndoableAction.ActionType.ADD_TASK, newTask);
+        lastAction = new Undo(Undo.ActionType.ADD_TASK, newTask);
 
         saveTasksToStorage();
         
@@ -276,7 +276,7 @@ public class BobBot {
         Task taskToDelete = tasks.getTask(taskIndex);
         assert taskToDelete != null;
 
-        lastAction = new UndoableAction(UndoableAction.ActionType.DELETE_TASK, taskToDelete, taskIndex);
+        lastAction = new Undo(Undo.ActionType.DELETE_TASK, taskToDelete, taskIndex);
 
         Task removedTask = tasks.deleteTask(taskIndex);
         assert removedTask != null;

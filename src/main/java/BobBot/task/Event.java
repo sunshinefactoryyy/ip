@@ -10,7 +10,7 @@ import java.time.format.DateTimeParseException;
  */
 public class Event extends Task {
     private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-    private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy HHmm");
+    private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("dd MMM yyyy HHmm");
 
     protected LocalDateTime from;
     protected LocalDateTime to;
