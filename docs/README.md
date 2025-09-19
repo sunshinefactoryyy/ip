@@ -1,6 +1,6 @@
 # BobBot Documentation
 
-![BobBot Interface](./Ui.png)
+<img src="Ui.png" alt="Alt Text" width="400" height="700">
 
 > "KING BOB!!!!" ~BobBot
 
