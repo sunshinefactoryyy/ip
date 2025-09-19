@@ -17,7 +17,6 @@ import bobbot.task.Todo;
  * Tasks are stored in a human-readable format that matches the display format.
  */
 public class Storage {
-    private static final String DATA_DIRECTORY = "../../../data";
     private final String filePath;
 
     /**
@@ -79,7 +78,7 @@ public class Storage {
     }
 
     private void createDataDirectoryIfNotExists() {
-        File dataDir = new File(DATA_DIRECTORY);
+        File dataDir = new File(filePath).getParentFile();
         if (!dataDir.exists()) {
             dataDir.mkdirs();
         }
